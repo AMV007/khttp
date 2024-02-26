@@ -20,7 +20,7 @@ class KHttpAsyncPutSpec : Spek({
 
         async.put(url, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!

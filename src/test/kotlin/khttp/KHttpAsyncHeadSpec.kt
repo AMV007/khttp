@@ -19,7 +19,7 @@ class KHttpAsyncHeadSpec : Spek({
 
         async.head("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the status code") {
             if (error != null) throw error!!
@@ -35,7 +35,7 @@ class KHttpAsyncHeadSpec : Spek({
 
         async.head("https://httpbin.org/redirect/2", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the status code") {
             if (error != null) throw error!!
@@ -49,9 +49,13 @@ class KHttpAsyncHeadSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.head("https://httpbin.org/redirect/2", allowRedirects = true, onError = { error = this }, onResponse = { response = this })
+        async.head(
+            "https://httpbin.org/redirect/2",
+            allowRedirects = true,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the status code") {
             if (error != null) throw error!!

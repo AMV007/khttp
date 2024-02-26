@@ -23,7 +23,7 @@ import java.net.ProtocolException
 import java.net.URL
 import java.net.URLConnection
 import java.nio.charset.Charset
-import java.util.Collections
+import java.util.*
 import java.util.zip.GZIPInputStream
 import java.util.zip.InflaterInputStream
 import javax.net.ssl.HttpsURLConnection
@@ -33,14 +33,16 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     internal companion object {
 
         internal val HttpURLConnection.cookieJar: CookieJar
-            get() = CookieJar(*this.headerFields.filter { it.key == "Set-Cookie" }.flatMap { it.value }.filter(String::isNotEmpty).map(::Cookie).toTypedArray())
+            get() = CookieJar(*this.headerFields.filter { it.key == "Set-Cookie" }.flatMap { it.value }
+                .filter(String::isNotEmpty).map(::Cookie).toTypedArray())
 
-        internal fun HttpURLConnection.forceMethod(method: String) {
+        private fun HttpURLConnection.forceMethod(method: String) {
             try {
                 this.requestMethod = method
             } catch (ex: ProtocolException) {
                 try {
-                    (this.javaClass.getDeclaredField("delegate").apply { this.isAccessible = true }.get(this) as HttpURLConnection?)?.forceMethod(method)
+                    (this.javaClass.getDeclaredField("delegate").apply { this.isAccessible = true }
+                        .get(this) as HttpURLConnection?)?.forceMethod(method)
                 } catch (ex: NoSuchFieldException) {
                     // ignore
                 }
@@ -110,11 +112,11 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                     connection.doOutput = true
                 }
                 // Write out the file in 4KiB chunks
-                input.use { input ->
+                input.use { inputThis ->
                     connection.outputStream.use { output ->
-                        while (input.available() > 0) {
+                        while (inputThis.available() > 0) {
                             output.write(
-                                ByteArray(Math.min(4096, input.available())).apply { input.read(this) }
+                                ByteArray(4096.coerceAtMost(inputThis.available())).apply { inputThis.read(this) }
                             )
                         }
                     }
@@ -127,7 +129,10 @@ class GenericResponse internal constructor(override val request: Request) : Resp
         )
     }
 
-    internal fun URL.openRedirectingConnection(first: Response, receiver: HttpURLConnection.() -> Unit): HttpURLConnection {
+    internal fun URL.openRedirectingConnection(
+        first: Response,
+        receiver: HttpURLConnection.() -> Unit
+    ): HttpURLConnection {
         val connection = (this.openConnection() as HttpURLConnection).apply {
             this.instanceFollowRedirects = false
             this.receiver()
@@ -139,7 +144,8 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 GenericResponse(
                     GenericRequest(
                         method = this.method,
-                        url = this@openRedirectingConnection.toURI().resolve(connection.getHeaderField("Location")).toASCIIString(),
+                        url = this@openRedirectingConnection.toURI().resolve(connection.getHeaderField("Location"))
+                            .toASCIIString(),
                         headers = this.headers,
                         params = this.params,
                         data = this.data,
@@ -171,8 +177,14 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     override val connection: HttpURLConnection
         get() {
             if (this._connection == null) {
-                this._connection = URL(this.request.url).openRedirectingConnection(this._history.firstOrNull() ?: this.apply { this._history.add(this) }) {
-                    (GenericResponse.defaultStartInitializers + this@GenericResponse.initializers + GenericResponse.defaultEndInitializers).forEach { it(this@GenericResponse, this) }
+                this._connection = URL(this.request.url).openRedirectingConnection(
+                    this._history.firstOrNull() ?: this.apply { this._history.add(this) }) {
+                    (GenericResponse.defaultStartInitializers + this@GenericResponse.initializers + GenericResponse.defaultEndInitializers).forEach {
+                        it(
+                            this@GenericResponse,
+                            this
+                        )
+                    }
                 }
             }
             return this._connection ?: throw IllegalStateException("Set to null by another thread")
@@ -191,7 +203,8 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     override val headers: Map<String, String>
         get() {
             if (this._headers == null) {
-                this._headers = this.connection.headerFields.mapValues { it.value.joinToString(", ") }.filterKeys { it != null }
+                this._headers =
+                    this.connection.headerFields.mapValues { it.value.joinToString(", ") }.filterKeys { it != null }
             }
             val headers = this._headers ?: throw IllegalStateException("Set to null by another thread")
             return CaseInsensitiveMap(headers)
@@ -204,7 +217,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
             } catch (ex: IOException) {
                 this.errorStream
             }
-            return when (this@GenericResponse.headers["Content-Encoding"]?.toLowerCase()) {
+            return when (this@GenericResponse.headers["Content-Encoding"]?.lowercase(Locale.getDefault())) {
                 "gzip" -> GZIPInputStream(stream)
                 "deflate" -> InflaterInputStream(stream)
                 else -> stream
@@ -258,8 +271,9 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 return this._encoding ?: throw IllegalStateException("Set to null by another thread")
             }
             this.headers["Content-Type"]?.let {
-                val charset = it.split(";").map { it.split("=") }.filter { it[0].trim().toLowerCase() == "charset" }.filter { it.size == 2 }.map { it[1] }.firstOrNull()
-                return Charset.forName(charset?.toUpperCase() ?: Charsets.UTF_8.name())
+                val charset = it.split(";").map { it.split("=") }.filter { it[0].trim().lowercase(Locale.getDefault()) == "charset" }
+                    .filter { it.size == 2 }.map { it[1] }.firstOrNull()
+                return Charset.forName(charset?.uppercase(Locale.getDefault()) ?: Charsets.UTF_8.name())
             }
             return Charsets.UTF_8
         }
@@ -273,7 +287,8 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     override fun contentIterator(chunkSize: Int): Iterator<ByteArray> {
         return object : Iterator<ByteArray> {
             var readBytes: ByteArray = ByteArray(0)
-            val stream = if (this@GenericResponse.request.stream) this@GenericResponse.raw else this@GenericResponse.content.inputStream()
+            val stream =
+                if (this@GenericResponse.request.stream) this@GenericResponse.raw else this@GenericResponse.content.inputStream()
 
             override fun next(): ByteArray {
                 val bytes = readBytes
@@ -310,7 +325,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                         }
                         true
                     }
-                } catch(ex: IOException) {
+                } catch (ex: IOException) {
                     false
                 }
             }
@@ -355,14 +370,15 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     private fun <T : URLConnection> Class<T>.getField(name: String, instance: T): Any? {
         (this.getSuperclasses() + this).forEach { clazz ->
             try {
-                return clazz.getDeclaredField(name).apply { this.isAccessible = true }.get(instance).apply { if (this == null) throw Exception() }
-            } catch(ex: Exception) {
+                return clazz.getDeclaredField(name).apply { this.isAccessible = true }.get(instance)
+                    .apply { if (this == null) throw Exception() }
+            } catch (ex: Exception) {
                 try {
                     val delegate = clazz.getDeclaredField("delegate").apply { this.isAccessible = true }.get(instance)
                     if (delegate is URLConnection) {
                         return delegate.javaClass.getField(name, delegate)
                     }
-                } catch(ex: NoSuchFieldException) {
+                } catch (ex: NoSuchFieldException) {
                     // ignore
                 }
             }
@@ -373,9 +389,12 @@ class GenericResponse internal constructor(override val request: Request) : Resp
     private fun updateRequestHeaders() {
         val headers = (this.request.headers as MutableMap<String, String>)
         val requests = this.connection.javaClass.getField("requests", this.connection) ?: return
+
         @Suppress("UNCHECKED_CAST")
-        val requestsHeaders = requests.javaClass.getDeclaredMethod("getHeaders").apply { this.isAccessible = true }.invoke(requests) as Map<String, List<String>>
-        headers += requestsHeaders.filterValues { it.filterNotNull().isNotEmpty() }.mapValues { it.value.joinToString(", ") }
+        val requestsHeaders = requests.javaClass.getDeclaredMethod("getHeaders").apply { this.isAccessible = true }
+            .invoke(requests) as Map<String, List<String>>
+        headers += requestsHeaders.filterValues { it.filterNotNull().isNotEmpty() }
+            .mapValues { it.value.joinToString(", ") }
     }
 
     /**

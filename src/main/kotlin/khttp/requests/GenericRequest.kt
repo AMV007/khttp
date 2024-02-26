@@ -22,7 +22,7 @@ import java.net.IDN
 import java.net.URI
 import java.net.URL
 import java.net.URLDecoder
-import java.util.UUID
+import java.util.*
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 
@@ -68,7 +68,8 @@ class GenericRequest internal constructor(
     override val headers: Map<String, String>
     override val data: Any?
     override val allowRedirects = allowRedirects ?: (this.method != "HEAD")
-    override val hostnameVerifier: HostnameVerifier = hostnameVerifier ?: HostnameVerifier { hostname, session -> hostname.equals(session.peerHost, true) }
+    override val hostnameVerifier: HostnameVerifier =
+        hostnameVerifier ?: HostnameVerifier { hostname, session -> hostname.equals(session.peerHost, true) }
     private var _body: ByteArray? = null
     override val body: ByteArray
         get() {
@@ -157,7 +158,8 @@ class GenericRequest internal constructor(
         if (this.files.isNotEmpty()) {
             mutableHeaders.putAllIfAbsentWithNull(GenericRequest.DEFAULT_UPLOAD_HEADERS)
             if ("Content-Type" in mutableHeaders) {
-                mutableHeaders["Content-Type"] = mutableHeaders["Content-Type"]?.format(UUID.randomUUID().toString().replace("-", ""))
+                mutableHeaders["Content-Type"] =
+                    mutableHeaders["Content-Type"]?.format(UUID.randomUUID().toString().replace("-", ""))
             }
         }
         val auth = this.auth
@@ -165,7 +167,8 @@ class GenericRequest internal constructor(
             val header = auth.header
             mutableHeaders[header.first] = header.second
         }
-        val nonNullHeaders: MutableMap<String, String> = mutableHeaders.filterValues { it != null }.mapValues { it.value!! }.toSortedMap()
+        val nonNullHeaders: MutableMap<String, String> =
+            mutableHeaders.filterValues { it != null }.mapValues { it.value!! }.toSortedMap()
         this.headers = CaseInsensitiveMutableMap(nonNullHeaders)
     }
 
@@ -201,15 +204,13 @@ class GenericRequest internal constructor(
     private fun URL.toIDN(): URL {
         val newHost = IDN.toASCII(this.host)
         this.javaClass.getDeclaredField("host").apply { this.isAccessible = true }.set(this, newHost)
-        this.javaClass.getDeclaredField("authority").apply { this.isAccessible = true }.set(this, if (this.port == -1) this.host else "${this.host}:${this.port}")
-        val query = if (this.query == null) {
-            null
-        } else {
-            URLDecoder.decode(this.query, "UTF-8")
-        }
-        return URL(URI(this.protocol, this.userInfo, this.host, this.port, this.path, query, this.ref).toASCIIString())
+        this.javaClass.getDeclaredField("authority").apply { this.isAccessible = true }
+            .set(this, if (this.port == -1) this.host else "${this.host}:${this.port}")
+        val query = this.query?.let { URLDecoder.decode(it, "UTF-8") }
+        return URL(URI(this.protocol, this.userInfo, newHost, this.port, this.path, query, this.ref).toASCIIString())
     }
 
-    private fun makeRoute(route: String) = URL(route + if (this.params.isNotEmpty()) "?${Parameters(this.params)}" else "").toIDN().toString()
+    private fun makeRoute(route: String) =
+        URL(route + if (this.params.isNotEmpty()) "?${Parameters(this.params)}" else "").toIDN().toString()
 
 }

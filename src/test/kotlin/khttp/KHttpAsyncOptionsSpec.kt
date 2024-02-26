@@ -19,7 +19,7 @@ class KHttpAsyncOptionsSpec : Spek({
 
         async.options("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the status code") {
             if (error != null) throw error!!

@@ -15,7 +15,8 @@ data class Cookie(val key: String, val value: Any, val attributes: Map<String, A
             val valueSplit = split[1].split(";")
             val value = valueSplit[0].trim()
             val attributes = if (valueSplit.size < 2) mapOf<String, Any?>() else {
-                valueSplit.subList(1, valueSplit.size).associate { it.split("=")[0].trim() to it.split("=").getOrNull(1)?.trim() }
+                valueSplit.subList(1, valueSplit.size)
+                    .associate { it.split("=")[0].trim() to it.split("=").getOrNull(1)?.trim() }
             }
             return Cookie(key, value, attributes)
         }
@@ -31,6 +32,7 @@ data class Cookie(val key: String, val value: Any, val attributes: Map<String, A
             if (this.attributes.isEmpty()) {
                 return this.value.toString()
             }
-            return this.value.toString() + "; " + this.attributes.asSequence().joinToString("; ") { if (it.value != null) "${it.key}=${it.value}" else "${it.key}" }
+            return this.value.toString() + "; " + this.attributes.asSequence()
+                .joinToString("; ") { if (it.value != null) "${it.key}=${it.value}" else "${it.key}" }
         }
 }

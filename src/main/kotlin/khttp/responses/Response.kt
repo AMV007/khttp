@@ -19,56 +19,68 @@ interface Response {
      * The request that generated this response.
      */
     val request: Request
+
     /**
      * The status code from the request.
      */
     val statusCode: Int
+
     /**
      * The headers from the request.
      */
     val headers: Map<String, String>
+
     /**
      * The raw response from the request.
      */
     val raw: InputStream
+
     /**
      * The response as a ByteArray.
      */
     val content: ByteArray
+
     /**
      * The response as a String.
      */
     val text: String
+
     /**
      * The response as a JSON object.
      *
      * @throws[org.json.JSONException] If the response is not a valid JSON object
      */
     val jsonObject: JSONObject
+
     /**
      * The response as a JSON array.
      *
      * @throws[org.json.JSONException] If the response is not a valid JSON array
      */
     val jsonArray: JSONArray
+
     /**
      * The cookies from the request.
      */
     val cookies: CookieJar
+
     /**
      * The URL that this request ended up going to.
      */
     val url: String
+
     /**
      * The encoding in which to decode text. If not specified, uses the Content-Type header. If there is no such header,
      * uses UTF-8.
      */
     var encoding: Charset
+
     /**
      * A list of KHttpResponse objects from the history of the request. Any redirect responses will end up here. The
      * list is sorted from the oldest to the most recent request.
      */
     val history: List<Response>
+
     /**
      * The connection used for the request.
      */

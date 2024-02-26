@@ -7,11 +7,7 @@ package khttp.structures.parameters
 
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class ParametersSpec : Spek({
     describe("Parameters generated from an empty map") {

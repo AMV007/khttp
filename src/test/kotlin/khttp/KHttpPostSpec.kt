@@ -12,7 +12,7 @@ import org.json.JSONObject
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.File
-import java.util.Base64
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
@@ -78,7 +78,10 @@ class KHttpPostSpec : Spek({
             val json = request.jsonObject
             val returnedJSON = json.getJSONArray("json")
             it("should be equal") {
-                assertEquals(jsonArray.string, String(returnedJSON.mapIndexed { i, _ -> returnedJSON.getString(i)[0] }.toCharArray()))
+                assertEquals(
+                    jsonArray.string,
+                    String(returnedJSON.mapIndexed { i, _ -> returnedJSON.getString(i)[0] }.toCharArray())
+                )
             }
         }
     }

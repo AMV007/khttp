@@ -5,7 +5,7 @@
  */
 package khttp.structures.authorization
 
-import java.util.Base64
+import java.util.*
 
 data class BasicAuthorization(val user: String, val password: String) : Authorization {
     override val header: Pair<String, String>

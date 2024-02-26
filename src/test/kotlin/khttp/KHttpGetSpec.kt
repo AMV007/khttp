@@ -14,11 +14,7 @@ import java.net.MalformedURLException
 import java.net.SocketTimeoutException
 import java.util.zip.GZIPInputStream
 import java.util.zip.InflaterInputStream
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class KHttpGetSpec : Spek({
     describe("a get request") {
@@ -72,7 +68,8 @@ class KHttpGetSpec : Spek({
         }
     }
     describe("a get request with basic auth") {
-        val response = get("http://httpbin.org/basic-auth/khttp/isawesome", auth = BasicAuthorization("khttp", "isawesome"))
+        val response =
+            get("http://httpbin.org/basic-auth/khttp/isawesome", auth = BasicAuthorization("khttp", "isawesome"))
         context("accessing the json") {
             val json = response.jsonObject
             it("should be authenticated") {
@@ -130,7 +127,8 @@ class KHttpGetSpec : Spek({
         }
     }
     describe("a get request that redirects with HTTP 307 and disallowing redirects") {
-        val response = get("http://httpbin.org/redirect-to?status_code=307&url=http://httpbin.org/get", allowRedirects = false)
+        val response =
+            get("http://httpbin.org/redirect-to?status_code=307&url=http://httpbin.org/get", allowRedirects = false)
         context("accessing the status code") {
             val code = response.statusCode
             it("should be 307") {
@@ -139,7 +137,8 @@ class KHttpGetSpec : Spek({
         }
     }
     describe("a get request that redirects with HTTP 308 and disallowing redirects") {
-        val response = get("http://httpbin.org/redirect-to?status_code=308&url=http://httpbin.org/get", allowRedirects = false)
+        val response =
+            get("http://httpbin.org/redirect-to?status_code=308&url=http://httpbin.org/get", allowRedirects = false)
         context("accessing the status code") {
             val code = response.statusCode
             it("should be 308") {
@@ -222,7 +221,8 @@ class KHttpGetSpec : Spek({
         val cookieValueOne = "quite"
         val cookieNameTwo = "derp"
         val cookieValueTwo = "herp"
-        val response = get("http://httpbin.org/cookies/set?$cookieNameOne=$cookieValueOne&$cookieNameTwo=$cookieValueTwo")
+        val response =
+            get("http://httpbin.org/cookies/set?$cookieNameOne=$cookieValueOne&$cookieNameTwo=$cookieValueTwo")
         context("inspecting the cookies") {
             val cookies = response.cookies
             it("should set two cookies") {
@@ -424,7 +424,7 @@ class KHttpGetSpec : Spek({
         context("iterating the lines") {
             val iterator = response.lineIterator()
             val bytes = iterator.asSequence().toList().flatMap { it.toList() }
-            val contentWithoutBytes = get(url).content.toList().filter { it != '\r'.toByte() && it != '\n'.toByte() }
+            val contentWithoutBytes = get(url).content.toList().filter { it != '\r'.code.toByte() && it != '\n'.code.toByte() }
             it("should be the same as the content without line breaks") {
                 assertEquals(contentWithoutBytes, bytes)
             }
@@ -442,7 +442,8 @@ class KHttpGetSpec : Spek({
     }
     describe("a request where the client needs to authenticate itself by certificates") {
         val url = "https://client.badssl.com/"
-        val sslContext = SslContextUtils.createFromKeyMaterial("keystores/badssl.com-client.p12", "badssl.com".toCharArray())
+        val sslContext =
+            SslContextUtils.createFromKeyMaterial("keystores/badssl.com-client.p12", "badssl.com".toCharArray())
 
         val response = get(url, sslContext = sslContext)
         context("check the url") {

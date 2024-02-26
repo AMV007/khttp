@@ -26,9 +26,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("http://httpbin.org/post", data = "Hello, world!", onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "http://httpbin.org/post",
+            data = "Hello, world!",
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing json") {
             if (error != null) throw error!!
@@ -42,9 +46,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("http://httpbin.org/post", data = mapOf("a" to "b", "c" to "d"), onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "http://httpbin.org/post",
+            data = mapOf("a" to "b", "c" to "d"),
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing json") {
             if (error != null) throw error!!
@@ -61,9 +69,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("http://httpbin.org/post", json = jsonMap, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "http://httpbin.org/post",
+            json = jsonMap,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -91,16 +103,23 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("http://httpbin.org/post", json = jsonArray, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "http://httpbin.org/post",
+            json = jsonArray,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
             val json = response!!.jsonObject
             val returnedJSON = json.getJSONArray("json")
             it("should be equal") {
-                assertEquals(jsonArray.string, String(returnedJSON.mapIndexed { i, _ -> returnedJSON.getString(i)[0] }.toCharArray()))
+                assertEquals(
+                    jsonArray.string,
+                    String(returnedJSON.mapIndexed { i, _ -> returnedJSON.getString(i)[0] }.toCharArray())
+                )
             }
         }
     }
@@ -109,9 +128,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", json = jsonList, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            json = jsonList,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -130,9 +153,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", json = jsonArray, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            json = jsonArray,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -151,9 +178,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", json = jsonObject, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            json = jsonObject,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -169,9 +200,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", json = jsonObject, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            json = jsonObject,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -185,9 +220,9 @@ class KHttpAsyncPostSpec : Spek({
     describe("an async request with invalid json") {
         var error: Throwable? = null
 
-        async.post("https://httpbin.org/post", json = object {}, onError = { error = this } )
+        async.post("https://httpbin.org/post", json = object {}, onError = { error = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { error != null }
+            .until { error != null }
 
         context("construction") {
             it("should throw an IllegalArgumentException") {
@@ -202,9 +237,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", files = listOf(file), onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            files = listOf(file),
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -227,9 +266,14 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", files = listOf(file), data = params, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            files = listOf(file),
+            data = params,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the json") {
             if (error != null) throw error!!
@@ -262,9 +306,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", data = file, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            data = file,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the data") {
             if (error != null) throw error!!
@@ -287,9 +335,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", data = inputStream, onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            data = inputStream,
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the data") {
             if (error != null) throw error!!
@@ -310,9 +362,13 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post("https://httpbin.org/post", json = mapOf("test" to true), onError = { error = this }, onResponse = { response = this })
+        async.post(
+            "https://httpbin.org/post",
+            json = mapOf("test" to true),
+            onError = { error = this },
+            onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
-                .until { response != null }
+            .until { response != null }
 
         context("accessing the request body") {
             if (error != null) throw error!!
