@@ -129,7 +129,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
         )
     }
 
-    internal fun URL.openRedirectingConnection(
+    private fun URL.openRedirectingConnection(
         first: Response,
         receiver: HttpURLConnection.() -> Unit
     ): HttpURLConnection {
@@ -346,7 +346,9 @@ class GenericResponse internal constructor(override val request: Request) : Resp
             val overflow = arrayListOf<ByteArray>()
 
             override fun next(): ByteArray {
-                if (overflow.isNotEmpty()) return overflow.removeAt(0)
+                if (overflow.isNotEmpty()) {
+                    return overflow.removeAt(0)
+                }
                 while (byteArrays.hasNext()) {
                     do {
                         val left = leftOver
@@ -360,12 +362,12 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                             overflow.addAll(split.subList(1, split.size - 1))
                             return split[0]
                         }
-                    } while (split.size < 2)
+                    } while (true) //(split.size < 2) for not give warning aht condition allways true
                 }
-                return leftOver!!
+                return leftOver!!.apply { leftOver = null }
             }
 
-            override fun hasNext() = overflow.isNotEmpty() || byteArrays.hasNext()
+            override fun hasNext() = overflow.isNotEmpty() || byteArrays.hasNext() || leftOver != null
         }
     }
 
@@ -379,14 +381,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 return clazz.getDeclaredField(name).apply { this.isAccessible = true }.get(instance)
                     .apply { if (this == null) throw NoSuchFieldException("Class null") }
             }.onFailure {
-                try {
-                    val delegate = clazz.getDeclaredField("delegate").apply { this.isAccessible = true }.get(instance)
-                    if (delegate is URLConnection) {
-                        return delegate.javaClass.getField(name, delegate)
-                    }
-                } catch (ex: NoSuchFieldException) {
-                    // ignore
-                }
+                //TODO: add handling
             }
         }
         return null

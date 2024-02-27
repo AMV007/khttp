@@ -43,3 +43,10 @@ Stable releases are hosted on [JCenter](https://bintray.com/bintray/jcenter).
 
 Development builds are currently available through [JitPack](https://jitpack.io/#jkcclemens/khttp). Snapshot builds may
 eventually be hosted on [OJO](https://oss.jfrog.org/), but are not currently available there.
+
+### Tests
+
+example run specific test: 
+``` bash
+./gradlew test --tests "khttp.KHttpAsyncGetSpec"
+```

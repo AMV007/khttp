@@ -220,9 +220,6 @@ class GenericRequest internal constructor(
 
     private fun URL.toIDN(): URL {
         val newHost = IDN.toASCII(this.host)
-        this.javaClass.getDeclaredField("host").apply { this.isAccessible = true }.set(this, newHost)
-        this.javaClass.getDeclaredField("authority").apply { this.isAccessible = true }
-            .set(this, if (this.port == -1) this.host else "${this.host}:${this.port}")
         val query = this.query?.let { URLDecoder.decode(it, "UTF-8") }
         return URL(URI(this.protocol, this.userInfo, newHost, this.port, this.path, query, this.ref).toASCIIString())
     }

@@ -42,20 +42,18 @@ fun ByteArray.splitLines(): List<ByteArray> {
     if (this.isEmpty()) return listOf()
     val lines = arrayListOf<ByteArray>()
     var lastSplit = 0
-    var skip = 0
+    var skipByte = false
     for ((i, byte) in this.withIndex()) {
-        if (skip > 0) {
-            skip--
+        if (skipByte){
+            skipByte = false
             continue
         }
-        if (byte == '\n'.code.toByte()) {
-            lines.add(this.sliceArray(lastSplit until i))
-            lastSplit = i + 1
-        } else if (byte == '\r'.code.toByte() && i + 1 < this.size && this[i + 1] == '\n'.code.toByte()) {
-            skip = 1
+
+        if (byte == '\r'.code.toByte() && i + 1 < this.size && this[i + 1] == '\n'.code.toByte()) {
+            skipByte = true
             lines.add(this.sliceArray(lastSplit until i))
             lastSplit = i + 2
-        } else if (byte == '\r'.code.toByte()) {
+        } else if (byte == '\r'.code.toByte() || byte == '\n'.code.toByte()) {
             lines.add(this.sliceArray(lastSplit until i))
             lastSplit = i + 1
         }
