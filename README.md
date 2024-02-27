@@ -46,7 +46,8 @@ eventually be hosted on [OJO](https://oss.jfrog.org/), but are not currently ava
 
 ### Tests
 
-example run specific test: 
+example run tests: 
 ``` bash
+./gradlew test --tests
 ./gradlew test --tests "khttp.KHttpAsyncGetSpec"
 ```

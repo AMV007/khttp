@@ -44,7 +44,7 @@ fun ByteArray.splitLines(): List<ByteArray> {
     var lastSplit = 0
     var skipByte = false
     for ((i, byte) in this.withIndex()) {
-        if (skipByte){
+        if (skipByte) {
             skipByte = false
             continue
         }
@@ -58,6 +58,7 @@ fun ByteArray.splitLines(): List<ByteArray> {
             lastSplit = i + 1
         }
     }
+
     lines += this.sliceArray(lastSplit until this.size)
     return lines
 }
@@ -71,6 +72,8 @@ fun ByteArray.split(delimiter: ByteArray): List<ByteArray> {
             skip--
             continue
         }
+        if ((i + delimiter.size) >= this.size) break // no space for slice
+
         if (this.sliceArray(i until i + delimiter.size).toList() == delimiter.toList()) {
             skip = delimiter.size
             lines += this.sliceArray(lastSplit until i)

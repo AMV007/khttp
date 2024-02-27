@@ -367,7 +367,8 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 return leftOver!!.apply { leftOver = null }
             }
 
-            override fun hasNext() = overflow.isNotEmpty() || byteArrays.hasNext() || leftOver != null
+            override fun hasNext() =
+                overflow.isNotEmpty() || byteArrays.hasNext() || (leftOver != null && leftOver!!.isNotEmpty())
         }
     }
 
