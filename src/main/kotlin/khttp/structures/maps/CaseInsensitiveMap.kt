@@ -14,7 +14,8 @@ class CaseInsensitiveMap<out V>(private val map: Map<String, V>) : Map<String, V
     }
 
     override fun get(key: String): V? {
-        return this.map.filter { it.key.equals(key.lowercase(Locale.getDefault()), ignoreCase = true) }.map { it.value }.firstOrNull()
+        return this.map.filter { it.key.equals(key.lowercase(Locale.getDefault()), ignoreCase = true) }.map { it.value }
+            .firstOrNull()
     }
 
     override fun toString(): String {

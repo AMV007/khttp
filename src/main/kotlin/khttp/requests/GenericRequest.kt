@@ -44,22 +44,27 @@ class GenericRequest internal constructor(
 ) : Request {
 
     companion object {
+        private const val CONTENT_TYPE = "Content-Type"
+
+        private val userAgent = System.getProperty("http.agent")
+            ?: "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.64 Mobile Safari/537.36"
+
         val DEFAULT_HEADERS = mapOf(
             "Accept" to "*/*",
             "Accept-Encoding" to "gzip, deflate",
-            "User-Agent" to "khttp/1.0.0-SNAPSHOT"
+            "User-Agent" to userAgent
         )
         val DEFAULT_DATA_HEADERS = mapOf(
-            "Content-Type" to "text/plain"
+            CONTENT_TYPE to "text/plain"
         )
         val DEFAULT_FORM_HEADERS = mapOf(
-            "Content-Type" to "application/x-www-form-urlencoded"
+            CONTENT_TYPE to "application/x-www-form-urlencoded"
         )
         val DEFAULT_UPLOAD_HEADERS = mapOf(
-            "Content-Type" to "multipart/form-data; boundary=%s"
+            CONTENT_TYPE to "multipart/form-data; boundary=%s"
         )
         val DEFAULT_JSON_HEADERS = mapOf(
-            "Content-Type" to "application/json"
+            CONTENT_TYPE to "application/json"
         )
     }
 
@@ -102,10 +107,10 @@ class GenericRequest internal constructor(
                 // If we're dealing with a non-streaming file upload
                 if (files.isNotEmpty()) {
                     // Get the boundary from the header set in GenericRequest
-                    val boundary = this.headers["Content-Type"]!!.split("boundary=")[1]
+                    val boundary = checkNotNull(this.headers["Content-Type"]).split("boundary=")[1]
                     // Make a writer for convenience
                     val writer = bytes.writer()
-                    // FIXME: Check if using base64 and only add header to data if so
+                    // TODO: Check if using base64 and only add header to data if so (need fix)
                     // Add the form data
                     if (data != null) {
                         for ((key, value) in data as Map<*, *>) {
@@ -131,13 +136,13 @@ class GenericRequest internal constructor(
                 }
                 this._body = bytes.toByteArray()
             }
-            return this._body ?: throw IllegalStateException("Set to null by another thread")
+            return this._body ?: throw IllegalStateException("Set to null by another thread body")
         }
 
     init {
         this.url = this.makeRoute(url)
-        if (URI(this.url).scheme !in setOf("http", "https")) {
-            throw IllegalArgumentException("Invalid schema. Only http:// and https:// are supported.")
+        require(URI(this.url).scheme in setOf("http", "https")) {
+            "Invalid schema. Only http:// and https:// are supported."
         }
         val json = this.json
         val mutableHeaders = CaseInsensitiveMutableMap(headers.toSortedMap())
@@ -173,24 +178,36 @@ class GenericRequest internal constructor(
     }
 
     private fun coerceToJSON(any: Any): String {
-        if (any is JSONObject || any is JSONArray) {
-            return any.toString()
-        } else if (any is Map<*, *>) {
-            return JSONObject(any.mapKeys { it.key.toString() }).toString()
-        } else if (any is Collection<*>) {
-            return JSONArray(any).toString()
-        } else if (any is Iterable<*>) {
-            return any.withJSONWriter { jsonWriter, _ ->
-                jsonWriter.array()
-                for (thing in any) {
-                    jsonWriter.value(thing)
-                }
-                jsonWriter.endArray()
+        when (any) {
+            is JSONObject, is JSONArray -> {
+                return any.toString()
             }
-        } else if (any is Array<*>) {
-            return JSONArray(any).toString()
-        } else {
-            throw IllegalArgumentException("Could not coerce ${any.javaClass.simpleName} to JSON.")
+
+            is Map<*, *> -> {
+                return JSONObject(any.mapKeys { it.key.toString() }).toString()
+            }
+
+            is Collection<*> -> {
+                return JSONArray(any).toString()
+            }
+
+            is Iterable<*> -> {
+                return any.withJSONWriter { jsonWriter, _ ->
+                    jsonWriter.array()
+                    for (thing in any) {
+                        jsonWriter.value(thing)
+                    }
+                    jsonWriter.endArray()
+                }
+            }
+
+            is Array<*> -> {
+                return JSONArray(any).toString()
+            }
+
+            else -> {
+                throw IllegalArgumentException("Could not coerce ${any.javaClass.simpleName} to JSON.")
+            }
         }
     }
 

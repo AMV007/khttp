@@ -18,7 +18,7 @@ class KHttpAsyncPatchSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.patch(url, onError = { error = this }, onResponse = { response = this })
+        Async.patch(url, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 

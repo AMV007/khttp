@@ -17,7 +17,7 @@ class KHttpAsyncHeadSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.head("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
+        Async.head("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -33,7 +33,7 @@ class KHttpAsyncHeadSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.head("https://httpbin.org/redirect/2", onError = { error = this }, onResponse = { response = this })
+        Async.head("https://httpbin.org/redirect/2", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -49,7 +49,7 @@ class KHttpAsyncHeadSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.head(
+        Async.head(
             "https://httpbin.org/redirect/2",
             allowRedirects = true,
             onError = { error = this },

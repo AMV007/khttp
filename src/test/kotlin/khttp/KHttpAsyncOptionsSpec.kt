@@ -17,7 +17,7 @@ class KHttpAsyncOptionsSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.options("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
+        Async.options("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 

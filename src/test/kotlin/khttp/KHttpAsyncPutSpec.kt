@@ -18,7 +18,7 @@ class KHttpAsyncPutSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.put(url, onError = { error = this }, onResponse = { response = this })
+        Async.put(url, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 

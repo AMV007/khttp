@@ -26,7 +26,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(url, onError = { error = this }, onResponse = { response = this })
+        Async.get(url, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -63,7 +63,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/get",
             params = mapOf("a" to "b", "c" to "d"),
             onError = { error = this },
@@ -85,7 +85,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/get",
             params = mapOf("a" to "b", "c" to "d"),
             onError = { error = this },
@@ -107,7 +107,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/basic-auth/khttp/isawesome",
             auth = BasicAuthorization("khttp", "isawesome"),
             onError = { error = this },
@@ -130,7 +130,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/cookies",
             cookies = mapOf("test" to "success"),
             onError = { error = this },
@@ -151,7 +151,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?url=${URLEncoder.encode("http://httpbin.org/get", "utf-8")}",
             onError = { error = this },
             onResponse = { response = this })
@@ -170,7 +170,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?status_code=307&url=${
                 URLEncoder.encode(
                     "http://httpbin.org/get",
@@ -192,7 +192,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?status_code=308&url=${
                 URLEncoder.encode(
                     "http://httpbin.org/get",
@@ -214,7 +214,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?url=${URLEncoder.encode("http://httpbin.org/get", "utf-8")}",
             allowRedirects = false,
             onError = { error = this },
@@ -234,7 +234,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?status_code=307&url=${
                 URLEncoder.encode(
                     "http://httpbin.org/get",
@@ -256,7 +256,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/redirect-to?status_code=308&url=${
                 URLEncoder.encode(
                     "http://httpbin.org/get",
@@ -278,7 +278,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("http://httpbin.org/redirect/5", onError = { error = this }, onResponse = { response = this })
+        Async.get("http://httpbin.org/redirect/5", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -293,7 +293,7 @@ class KHttpAsyncGetSpec : Spek({
     describe("an async get request that takes ten seconds to complete") {
         var error: Throwable? = null
 
-        async.get("http://httpbin.org/delay/10", timeout = 1.0, onError = { error = this })
+        Async.get("http://httpbin.org/delay/10", timeout = 1.0, onError = { error = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { error != null }
 
@@ -312,7 +312,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/cookies/set?$cookieName=$cookieValue",
             allowRedirects = false,
             onError = { error = this },
@@ -350,7 +350,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/cookies/set?$cookieName=$cookieValue",
             onError = { error = this },
             onResponse = { response = this })
@@ -389,7 +389,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/cookies/set?$cookieNameOne=$cookieValueOne&$cookieNameTwo=$cookieValueTwo",
             onError = { error = this },
             onResponse = { response = this })
@@ -438,7 +438,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org/gzip", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org/gzip", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -461,7 +461,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org/deflate", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org/deflate", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -484,7 +484,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org/status/418", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org/status/418", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -507,7 +507,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org/encoding/utf8", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org/encoding/utf8", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -544,7 +544,7 @@ class KHttpAsyncGetSpec : Spek({
     describe("an async unsupported khttp schema") {
         var error: Throwable? = null
 
-        async.get("ftp://google.com", onError = { error = this })
+        Async.get("ftp://google.com", onError = { error = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { error != null }
 
@@ -559,7 +559,7 @@ class KHttpAsyncGetSpec : Spek({
     describe("an async unsupported Java schema") {
         var error: Throwable? = null
 
-        async.get("gopher://google.com", onError = { error = this })
+        Async.get("gopher://google.com", onError = { error = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { error != null }
 
@@ -577,7 +577,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "https://httpbin.org/user-agent",
             headers = mapOf("User-Agent" to userAgent),
             onError = { error = this },
@@ -598,7 +598,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org:443/get", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org:443/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -614,7 +614,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://jsonplaceholder.typicode.com/users",
             onError = { error = this },
             onResponse = { response = this })
@@ -633,7 +633,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
+        Async.get("https://httpbin.org/get", onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -649,7 +649,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/stream/4",
             stream = true,
             onError = { error = this },
@@ -674,7 +674,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             "http://httpbin.org/stream-bytes/4?seed=1",
             stream = true,
             onError = { error = this },
@@ -702,7 +702,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(url, stream = true, onError = { error = this }, onResponse = { response = this })
+        Async.get(url, stream = true, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 
@@ -710,7 +710,8 @@ class KHttpAsyncGetSpec : Spek({
             if (error != null) throw error!!
             val iterator = response!!.lineIterator()
             val bytes = iterator.asSequence().toList().flatMap { it.toList() }
-            val contentWithoutBytes = get(url).content.toList().filter { it != '\r'.code.toByte() && it != '\n'.code.toByte() }
+            val contentWithoutBytes =
+                get(url).content.toList().filter { it != '\r'.code.toByte() && it != '\n'.code.toByte() }
             it("should be the same as the content without line breaks") {
                 assertEquals(contentWithoutBytes, bytes)
             }
@@ -725,7 +726,7 @@ class KHttpAsyncGetSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.get(
+        Async.get(
             url,
             sslContext = sslContext,
             stream = true,

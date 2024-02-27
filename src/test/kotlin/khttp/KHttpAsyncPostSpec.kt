@@ -26,7 +26,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "http://httpbin.org/post",
             data = "Hello, world!",
             onError = { error = this },
@@ -46,7 +46,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "http://httpbin.org/post",
             data = mapOf("a" to "b", "c" to "d"),
             onError = { error = this },
@@ -69,7 +69,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "http://httpbin.org/post",
             json = jsonMap,
             onError = { error = this },
@@ -103,7 +103,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "http://httpbin.org/post",
             json = jsonArray,
             onError = { error = this },
@@ -128,7 +128,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             json = jsonList,
             onError = { error = this },
@@ -153,7 +153,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             json = jsonArray,
             onError = { error = this },
@@ -178,7 +178,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             json = jsonObject,
             onError = { error = this },
@@ -200,7 +200,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             json = jsonObject,
             onError = { error = this },
@@ -220,7 +220,7 @@ class KHttpAsyncPostSpec : Spek({
     describe("an async request with invalid json") {
         var error: Throwable? = null
 
-        async.post("https://httpbin.org/post", json = object {}, onError = { error = this })
+        Async.post("https://httpbin.org/post", json = object {}, onError = { error = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { error != null }
 
@@ -237,7 +237,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             files = listOf(file),
             onError = { error = this },
@@ -266,7 +266,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             files = listOf(file),
             data = params,
@@ -306,7 +306,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             data = file,
             onError = { error = this },
@@ -335,7 +335,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             data = inputStream,
             onError = { error = this },
@@ -362,7 +362,7 @@ class KHttpAsyncPostSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.post(
+        Async.post(
             "https://httpbin.org/post",
             json = mapOf("test" to true),
             onError = { error = this },

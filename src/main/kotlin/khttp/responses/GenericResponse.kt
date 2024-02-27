@@ -169,9 +169,15 @@ class GenericResponse internal constructor(override val request: Request) : Resp
         return connection
     }
 
-    internal var _history: MutableList<Response> = arrayListOf()
+    private var _history: MutableList<Response> = arrayListOf()
     override val history: List<Response>
         get() = Collections.unmodifiableList(this._history)
+
+    fun removeLastFromHistory(): Response =
+        _history.last().apply {
+            _history.remove(this)
+        }
+
 
     private var _connection: HttpURLConnection? = null
     override val connection: HttpURLConnection
@@ -187,7 +193,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                     }
                 }
             }
-            return this._connection ?: throw IllegalStateException("Set to null by another thread")
+            return this._connection ?: throw IllegalStateException("Set to null by another thread connection")
         }
 
     private var _statusCode: Int? = null
@@ -196,7 +202,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
             if (this._statusCode == null) {
                 this._statusCode = this.connection.responseCode
             }
-            return this._statusCode ?: throw IllegalStateException("Set to null by another thread")
+            return this._statusCode ?: throw IllegalStateException("Set to null by another thread status")
         }
 
     private var _headers: Map<String, String>? = null
@@ -206,7 +212,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 this._headers =
                     this.connection.headerFields.mapValues { it.value.joinToString(", ") }.filterKeys { it != null }
             }
-            val headers = this._headers ?: throw IllegalStateException("Set to null by another thread")
+            val headers = this._headers ?: throw IllegalStateException("Set to null by another thread headers")
             return CaseInsensitiveMap(headers)
         }
 
@@ -271,7 +277,8 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                 return this._encoding ?: throw IllegalStateException("Set to null by another thread")
             }
             this.headers["Content-Type"]?.let {
-                val charset = it.split(";").map { it.split("=") }.filter { it[0].trim().lowercase(Locale.getDefault()) == "charset" }
+                val charset = it.split(";").map { it.split("=") }
+                    .filter { it[0].trim().lowercase(Locale.getDefault()) == "charset" }
                     .filter { it.size == 2 }.map { it[1] }.firstOrNull()
                 return Charset.forName(charset?.uppercase(Locale.getDefault()) ?: Charsets.UTF_8.name())
             }
@@ -292,7 +299,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
 
             override fun next(): ByteArray {
                 val bytes = readBytes
-                val readSize = Math.min(chunkSize, bytes.size + stream.available())
+                val readSize = chunkSize.coerceAtMost(bytes.size + stream.available())
                 val left = if (bytes.size > readSize) {
                     return bytes.asList().subList(0, readSize).toByteArray().apply {
                         readBytes = bytes.asList().subList(readSize, bytes.size).toByteArray()
@@ -359,7 +366,6 @@ class GenericResponse internal constructor(override val request: Request) : Resp
             }
 
             override fun hasNext() = overflow.isNotEmpty() || byteArrays.hasNext()
-
         }
     }
 
@@ -369,10 +375,10 @@ class GenericResponse internal constructor(override val request: Request) : Resp
 
     private fun <T : URLConnection> Class<T>.getField(name: String, instance: T): Any? {
         (this.getSuperclasses() + this).forEach { clazz ->
-            try {
+            runCatching {
                 return clazz.getDeclaredField(name).apply { this.isAccessible = true }.get(instance)
-                    .apply { if (this == null) throw Exception() }
-            } catch (ex: Exception) {
+                    .apply { if (this == null) throw NoSuchFieldException("Class null") }
+            }.onFailure {
                 try {
                     val delegate = clazz.getDeclaredField("delegate").apply { this.isAccessible = true }.get(instance)
                     if (delegate is URLConnection) {

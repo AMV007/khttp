@@ -18,7 +18,7 @@ class KHttpAsyncDeleteSpec : Spek({
         var error: Throwable? = null
         var response: Response? = null
 
-        async.delete(url, onError = { error = this }, onResponse = { response = this })
+        Async.delete(url, onError = { error = this }, onResponse = { response = this })
         await.atMost(5, TimeUnit.SECONDS)
             .until { response != null }
 

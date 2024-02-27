@@ -424,7 +424,8 @@ class KHttpGetSpec : Spek({
         context("iterating the lines") {
             val iterator = response.lineIterator()
             val bytes = iterator.asSequence().toList().flatMap { it.toList() }
-            val contentWithoutBytes = get(url).content.toList().filter { it != '\r'.code.toByte() && it != '\n'.code.toByte() }
+            val contentWithoutBytes =
+                get(url).content.toList().filter { it != '\r'.code.toByte() && it != '\n'.code.toByte() }
             it("should be the same as the content without line breaks") {
                 assertEquals(contentWithoutBytes, bytes)
             }
