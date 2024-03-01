@@ -147,7 +147,7 @@ class GenericResponse internal constructor(override val request: Request) : Resp
                         url = this@openRedirectingConnection.toURI().resolve(connection.getHeaderField("Location"))
                             .toASCIIString(),
                         headers = this.headers,
-                        params = this.params,
+                        params = mapOf(),
                         data = this.data,
                         json = this.json,
                         auth = this.auth,
